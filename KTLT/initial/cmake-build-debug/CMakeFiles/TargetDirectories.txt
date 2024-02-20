@@ -1,0 +1,3 @@
+/Users/trankhoi/Downloads/KTLT/initial/cmake-build-debug/CMakeFiles/initial.dir
+/Users/trankhoi/Downloads/KTLT/initial/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/trankhoi/Downloads/KTLT/initial/cmake-build-debug/CMakeFiles/rebuild_cache.dir

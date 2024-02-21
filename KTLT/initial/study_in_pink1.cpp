@@ -376,15 +376,109 @@ int chaseTaxi(int & HP1, int & EXP1, int & HP2, int & EXP2, int E3) {
 
 // Task 4
 int checkPassword(const char * s, const char * email) {
-    // TODO: Complete this function
+    // Kiểm tra chiều dài của mật khẩu
+    int len = strlen(s);
+    if (len < 8) return -1; // Độ dài của mật khẩu quá ngắn
+    if (len > 20) return -2; // Độ dài của mật khẩu quá dài
 
-    return -99;
+    // Kiểm tra sự tồn tại của ký tự đặc biệt
+    bool hasSpecialChar = false;
+    const char specialChars[] = "@#%$!";
+    for (int i = 0; i < len; ++i) {
+        if (strchr(specialChars, s[i]) != nullptr) {
+            hasSpecialChar = true;
+            break;
+        }
+    }
+    if (!hasSpecialChar) return -5; // Không chứa ký tự đặc biệt
+
+    // Kiểm tra sự xuất hiện của chuỗi "se"
+    const char *atPosition = strchr(email, '@'); // Tìm vị trí của ký tự '@' trong email
+    if (atPosition == nullptr) return -99; // Không tìm thấy ký tự '@' trong email
+    int seInEmailIndex = atPosition - email; // Xác định chỉ số của ký tự '@' trong email
+
+    // Cấp phát bộ nhớ động cho con trỏ se
+    char *se = new char[seInEmailIndex + 1];
+
+    // Sao chép phần trước ký tự '@' của email vào se
+    strncpy(se, email, seInEmailIndex);
+    se[seInEmailIndex] = '\0'; // Kết thúc chuỗi
+
+    // Kiểm tra sự xuất hiện của hơn 2 ký tự liên tiếp
+    for (int i = 0; i < len - 2; ++i) {
+        if (s[i] == s[i + 1] && s[i] == s[i + 2]) {
+            return -(400 + i); // Xuất hiện hơn 2 ký tự liên tiếp
+        }
+    }
+
+    // Kiểm tra sự xuất hiện của chuỗi se
+    const char *seInPassword = strstr(s, se);
+    if (seInPassword != nullptr) {
+        return -(300 + (seInPassword - s)); // Xuất hiện chuỗi "se"
+    }
+
+    // Kiểm tra từng ký tự trong mật khẩu
+    for (int i = 0; i < len; ++i) {
+        // Kiểm tra ký tự có phải là chữ số, chữ cái thường, chữ cái in hoa, hoặc ký tự đặc biệt
+        if (!((s[i] >= '0' && s[i] <= '9') ||
+              (s[i] >= 'a' && s[i] <= 'z') ||
+              (s[i] >= 'A' && s[i] <= 'Z') ||
+              strchr(specialChars, s[i]) != nullptr)) {
+            return -(100 + i); // Ký tự không hợp lệ
+        }
+    }
+
+    // Giải phóng bộ nhớ đã cấp phát
+    delete[] se;
+
+    // Mật khẩu hợp lệ
+    return -10;
 }
 
 // Task 5
 int findCorrectPassword(const char * arr_pwds[], int num_pwds) {
     // TODO: Complete this function
+    int maxCount = 0;
+    int maxLength = 0;
+    const char* correctPassword = nullptr;
 
+    // Tạo mảng để đếm số lần xuất hiện của mỗi mật khẩu
+    int count[num_pwds];
+    memset(count, 0, sizeof(count));
+
+    // Tạo mảng để lưu độ dài của mỗi mật khẩu
+    int length[num_pwds];
+    memset(length, 0, sizeof(length));
+
+    // Đếm số lần xuất hiện và tính độ dài của mỗi mật khẩu
+    for (int i = 0; i < num_pwds; ++i) {
+        const char* pwd = arr_pwds[i];
+        int len = strlen(pwd);
+        length[i] = len;
+        for (int j = 0; j < num_pwds; ++j) {
+            if (strcmp(pwd, arr_pwds[j]) == 0) {
+                count[i]++;
+            }
+        }
+    }
+
+    // Tìm mật khẩu có số lần xuất hiện nhiều nhất và có độ dài dài nhất
+    for (int i = 0; i < num_pwds; ++i) {
+        if (count[i] > maxCount || (count[i] == maxCount && length[i] > maxLength)) {
+            maxCount = count[i];
+            maxLength = length[i];
+            correctPassword = arr_pwds[i];
+        }
+    }
+
+    // Tìm vị trí đầu tiên của mật khẩu đúng trong mảng arr_pwds
+    for (int i = 0; i < num_pwds; ++i) {
+        if (strcmp(arr_pwds[i], correctPassword) == 0) {
+            return i;
+        }
+    }
+
+    // Trường hợp không tìm thấy
     return -1;
 }
 
